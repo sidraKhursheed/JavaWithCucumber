@@ -1,0 +1,527 @@
+Index: src/test/java/Helper/Drivers.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/test/java/Helper/Drivers.java	(revision de341ed80aec81fcfe721ee83c4a96d13bc72dc1)
++++ src/test/java/Helper/Drivers.java	(date 1565084621030)
+@@ -1,14 +1,15 @@
+ package Helper;
+ 
+-import java.util.HashMap;
+-import java.util.List;
+-import java.util.Map;
+-import java.util.Set;
+ import cucumber.api.Scenario;
+ import org.openqa.selenium.*;
+ import org.openqa.selenium.chrome.ChromeDriver;
+ import org.openqa.selenium.firefox.FirefoxDriver;
+ 
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++import java.util.Set;
++
+ public class Drivers implements WebDriver {
+ 
+     WebDriver driver;
+@@ -16,7 +17,10 @@
+     public String env;
+     public String baseurl;
+ 
++
+     public void setUp() {
++     //   driver.manage().deleteAllCookies();
++    //    driver.findElement(By.cssSelector("#hs-eu-confirmation-button ")).click();
+         Map<String, String> paramMap = getParameters("browser","env");
+         browserName=paramMap.get("browserName");
+         env=paramMap.get("env");
+@@ -24,6 +28,8 @@
+         driver = getInstance(browserName);
+         getEnvironment(env);
+         driver.manage().window().maximize();
++
++       // driver.manage().deleteAllCookies();
+     }
+ 
+     public void tearDown(Scenario scenario) {
+Index: src/test/java/Features/FairWebsiteHome.feature
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/test/java/Features/FairWebsiteHome.feature	(revision de341ed80aec81fcfe721ee83c4a96d13bc72dc1)
++++ src/test/java/Features/FairWebsiteHome.feature	(date 1565164918107)
+@@ -1,15 +1,50 @@
+-Feature: FAIR Website home page
++  Feature: FAIR Website home page
+ 
+- @fairHome
+-
+-
+-  Scenario: Verify that FAIR website open succesfully
+-    Given Launch Fair website url
+-    And I click on start project button
+-    Then The start project form should appear
+-    Then close the browser
+-
++  @Smoke
++  Scenario: Verify Home page contains service section
++    Given Home page contain the Consulting Service section with Service button
++    When User clicks on Service button
++    Then Service page will open
++  @Smoke
++  Scenario: Verify Home page contains FAIR Friendly section
++    Given Home page contain the FAIR Friendly section with Explore button
++    When User clicks on Explore button
++    Then  About page will open
++  @Smoke
++  Scenario: Verify Home page contains Product section
++    Given Home page contain the Product section with Work button
++    When User clicks on Work button
++    Then  Product page will open
++  @Smoke
++  Scenario: Verify Home page contains Insights section
++   Given  Home page contain the Insight section with Work button
++   When User clicks on Content button
++   Then  Content page will open
+ 
++  @Smoke
++   Scenario: Verify Home page contains Partner section
++   Given  Home page contain the Partner section with More button
++   When User clicks on More button
++   Then  Partner page will open
++                                                       #@subscribe
++  ##Scenario: Verify that Home page contains the Subscribe section with subscribe button, whenever user selects the subribe button , subscribe form will open
++  ##  Given Launch Fair website url
++  ##  When FAIR website open it contains subcribe section
++  ##  And Website should display Accept and Decline popup
++  ##  And Subscribe section has subscribe button
++  ##  And User select the Subscribe button
++  ##  Then website should open the subscribe form
++  ##  And close the browser
++  ##
+ 
+-
++  @Smoke
++  Scenario: Verify Home page header contain hamburger icon with Home page link
++    Given Home page header contain hamburger icon with Home page link
++    When User clicks home link
++    Then Home page will open
++  @Smoke
++  Scenario: Verify Home page header contain hamburger icon with About page link
++    Given Home page header contain hamburger icon with About page link
++    When User clicks on About link
++    Then About page will open
+ 
+Index: src/test/java/Pageobject/FairWebsiteHomeObject.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/test/java/Pageobject/FairWebsiteHomeObject.java	(revision de341ed80aec81fcfe721ee83c4a96d13bc72dc1)
++++ src/test/java/Pageobject/FairWebsiteHomeObject.java	(date 1565165008943)
+@@ -1,24 +1,175 @@
+-package Pageobject;
++    package Pageobject;
+ 
+-import Helper.Drivers;
+-import cucumber.api.Scenario;
+-import cucumber.api.java.After;
+-import org.openqa.selenium.By;
+-import org.openqa.selenium.support.ui.ExpectedConditions;
+-import org.openqa.selenium.support.ui.WebDriverWait;
+-
++    import Helper.Drivers;
++    import org.openqa.selenium.By;
++    import org.openqa.selenium.WebElement;
++    import org.openqa.selenium.support.ui.ExpectedConditions;
++    import org.openqa.selenium.support.ui.WebDriverWait;
++    import static org.junit.Assert.assertTrue;
+ 
+-public class FairWebsiteHomeObject {
++    public class FairWebsiteHomeObject {
+ 
++    //Consulting Service
++        public void ConsultingServiceHome(Drivers driver) {
++
++            String bodyText = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1538631514751.vc_row-has-fill > div.wpb_column.vc_column_container.vc_col-sm-8.vc_col-xs-12 > div > div > h1")).getText();
++            assertTrue("Text not found!", bodyText.contains("Consulting Services"));
++            System.out.println("Website contains the section i.e. Consulting Service");
++            String bodyText1 = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1538631514751.vc_row-has-fill > div.wpb_column.vc_column_container.vc_col-sm-8.vc_col-xs-12 > div > div > div:nth-child(5) > a")).getText();
++            assertTrue("Text not found!", bodyText1.contains("Service"));
++            System.out.println("Consulting service contains the button i.e. Service");
++        }
++
++        public void VerifyServiceButton(Drivers driver) {
++
++            WebDriverWait wait = new WebDriverWait(driver, 30);
++            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1538631514751.vc_row-has-fill > div.wpb_column.vc_column_container.vc_col-sm-8.vc_col-xs-12 > div > div > div:nth-child(5) > a")));
++            driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1538631514751.vc_row-has-fill > div.wpb_column.vc_column_container.vc_col-sm-8.vc_col-xs-12 > div > div > div:nth-child(5) > a")).click();
++            System.out.println("Click the service button");
++        }
++
++        public void GetUrl(Drivers driver){
++
++            String Serviceurl = driver.getCurrentUrl();
++            System.out.println("url "+ Serviceurl);
++        }
++
++        public void AcceptCookie(Drivers driver){
++           driver.findElement(By.cssSelector("#hs-eu-confirmation-button")).click();
++            System.out.println("Accept cookies");
++        }
++
++        //Agile Friendly
++        public void AgileFriendlyHome(Drivers driver) {
++
++            String bodyText = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1540199238529.vc_row-has-fill > div.wpb_column.vc_column_container.vc_col-sm-8.vc_col-xs-12 > div > div > h1")).getText();
++            assertTrue("Text not found!", bodyText.contains("FAIR - Friendly. Agile. Innovative. Responsible."));
++            System.out.println("Website contains the section i.e. FAIR - Friendly. Agile. Innovative. Responsible.");
++            String bodyText1 = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1540199238529.vc_row-has-fill > div.wpb_column.vc_column_container.vc_col-sm-8.vc_col-xs-12 > div > div > div:nth-child(7) > a")).getText();
++            assertTrue("Text not found!", bodyText1.contains("Explore"));
++            System.out.println("FAIR - Friendly. Agile. Innovative. Responsible. contains the button i.e. Explore");
++        }
++
++        public void VerifyExploreButton(Drivers driver) {
++
++            WebDriverWait wait = new WebDriverWait(driver, 30);
++            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1540199238529.vc_row-has-fill > div.wpb_column.vc_column_container.vc_col-sm-8.vc_col-xs-12 > div > div > div:nth-child(7) > a")));
++            driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1540199238529.vc_row-has-fill > div.wpb_column.vc_column_container.vc_col-sm-8.vc_col-xs-12 > div > div > div:nth-child(7) > a")).click();
++            System.out.println("Click the Explore button");
++        }
+ 
+-    public void ClickStartProject(Drivers driver) {
+-        WebDriverWait wait = new WebDriverWait(driver, 30);
+-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#spu-33064 > div > div > p")));
+-        driver.findElement(By.cssSelector("#spu-33064 > div > div > p")).click();
+-        System.out.println("Click the start project");
+-    }
++        //Product Section
++        public void ProductHome(Drivers driver) {
++
++            String bodyText = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1537090150295.vc_row-has-fill > div > div > div > h1")).getText();
++            assertTrue("Text not found!", bodyText.contains("Products"));
++            System.out.println("Website contains the section i.e. Products");
++            String bodyText1 = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1537090150295.vc_row-has-fill > div > div > div > div:nth-child(7) > a")).getText();
++            assertTrue("Text not found!", bodyText1.contains("Work"));
++            System.out.println(" contains the button i.e. Work");
++        }
++
++
++        public void VerifyWorkButton(Drivers driver) {
++
++            WebDriverWait wait = new WebDriverWait(driver, 30);
++            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1537090150295.vc_row-has-fill > div > div > div > div:nth-child(7) > a")));
++            driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1537090150295.vc_row-has-fill > div > div > div > div:nth-child(7) > a")).click();
++            System.out.println("Click the Work button");
++        }
++
++        //Insights
++        public void InsightsHome(Drivers driver) {
++
++            String bodyText = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_row-o-content-top.vc_row-flex > div > div > div > h1")).getText();
++            assertTrue("Text not found!", bodyText.contains("Insights"));
++            System.out.println("Website contains the section i.e. Insights");
++            String bodyText1 = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_row-o-content-top.vc_row-flex > div > div > div > div:nth-child(7) > a")).getText();
++            assertTrue("Text not found!", bodyText1.contains("Content"));
++            System.out.println("Insights contains the button i.e. Content");
++        }
++
++        public void VerifyContentButton(Drivers driver) {
++
++            WebDriverWait wait = new WebDriverWait(driver, 30);
++            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_row-o-content-top.vc_row-flex > div > div > div > div:nth-child(7) > a")));
++            driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_row-o-content-top.vc_row-flex > div > div > div > div:nth-child(7) > a")).click();
++            System.out.println("Click the Content button");
++        }
++
++        //Partner
++        public void PartnerHome(Drivers driver) {
++
++            String bodyText = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1540199361116.vc_row-has-fill > div > div > div > h1")).getText();
++            assertTrue("Text not found!", bodyText.contains("Partners"));
++            System.out.println("Website contains the section i.e. Partners");
++            String bodyText1 = driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1540199361116.vc_row-has-fill > div > div > div > div:nth-child(8) > a")).getText();
++            assertTrue("Text not found!", bodyText1.contains("More"));
++            System.out.println("Partner section contains the button i.e. More");
++        }
++
++        public void VerifyMoreButton(Drivers driver) {
++
++            WebDriverWait wait = new WebDriverWait(driver, 30);
++            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1540199361116.vc_row-has-fill > div > div > div > div:nth-child(8) > a")));
++            driver.findElement(By.cssSelector("#wtr-content > div.vc_row.wpb_row.vc_row-fluid.vc_custom_1540199361116.vc_row-has-fill > div > div > div > div:nth-child(8) > a")).click();
++            System.out.println("Click the Content button");
++        }
+ 
++        //Subscribe
++        public void DisplaySubcribe(Drivers driver) {
+ 
++            String bodyText = driver.findElement(By.cssSelector("#subscribe > div > div > h1")).getText();
++            assertTrue("Text not found!", bodyText.contains("Stay up-to-date with FAIR"));
++            System.out.println("Website contains the section i.e. Stay up-to-date with FAIR");
++        }
++        public void SectionHassubcribeButton(Drivers driver) {
++            String bodyText = driver.findElement(By.cssSelector("#subscribe > div > div > div.wpb_text_column.wpb_content_element > div > div > div")).getText();
++            assertTrue("Text not found!", bodyText.contains("Subscribe"));
++            System.out.println(" Stay up-to-date with FAIR section contains the button i.e. Subscribe");
++        }
++        public void ClickSubscribeButton(Drivers driver)  {
+ 
+-}
++            WebDriverWait wait = new WebDriverWait(driver, 40);
++            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#subscribe > div > div > div.wpb_text_column.wpb_content_element > div > div > div")));
++            driver.findElement(By.cssSelector("#subscribe > div > div > div.wpb_text_column.wpb_content_element > div > div > div")).click();
++            System.out.println("Click the Subscribe button");
++            try {
++                Thread.sleep(30);
++            } catch (InterruptedException e) {
++                e.printStackTrace();
++            }
++        }
++        public void CheckSubscribePopup(Drivers driver) {
++            String bodyText = driver.findElement(By.cssSelector("#field_1_2 > div > h2 > span")).getText();
++            assertTrue("Text not found!", bodyText.contains("Stay up to date with FAIR"));
++            System.out.println(" Subscribe popup is open");
++        }
+ 
++        //Header
++        public void HamburgerHomeIcon(Drivers driver) {
++
++           WebElement element = driver.findElement(By.cssSelector("#perspective-menu-buttons > button.perspective-toggle.toggle-size-small > span.menu-line-3"));
++            element.isDisplayed();
++            System.out.println("Hamburger Image displayed");
++            driver.findElement(By.cssSelector("#perspective-menu-buttons > button.perspective-toggle.toggle-size-small > span.menu-line-3")).click();
++            System.out.println("Hamburger Image Clicked");
++
++    }
++        public void VerifyHomeHamburger(Drivers driver) {
++
++            WebDriverWait wait = new WebDriverWait(driver, 40);
++            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#menu-item-31744 > a")));
++            driver.findElement(By.cssSelector("#menu-item-31744 > a")).click();
++           System.out.println("Home Icon clicked");
++
++        }
++        public void DisplayAboutHamburger(Drivers driver) {
++
++            WebDriverWait wait = new WebDriverWait(driver, 40);
++            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#menu-item-31742 > a")));
++            driver.findElement(By.cssSelector("#menu-item-31742 > a")).click();
++            System.out.println("About Icon clicked");
++
++        }
++    }
+\ No newline at end of file
+Index: src/test/java/Step_defination/FairWebsiteHomepage.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/test/java/Step_defination/FairWebsiteHomepage.java	(revision de341ed80aec81fcfe721ee83c4a96d13bc72dc1)
++++ src/test/java/Step_defination/FairWebsiteHomepage.java	(date 1565164918091)
+@@ -2,46 +2,178 @@
+ 
+ import Helper.Drivers;
+ import Pageobject.FairWebsiteHomeObject;
++import cucumber.api.java.After;
++import cucumber.api.java.Before;
+ import cucumber.api.java.en.And;
+ import cucumber.api.java.en.Given;
+ import cucumber.api.java.en.Then;
++import cucumber.api.java.en.When;
+ 
+ 
+-public class FairWebsiteHomepage {
++    public class FairWebsiteHomepage {
+ 
+-    Drivers driver = new Drivers();
+-    FairWebsiteHomeObject fairhome = new FairWebsiteHomeObject();
++        Drivers driver = new Drivers();
++        FairWebsiteHomeObject fairhome = new FairWebsiteHomeObject();
+ 
+-
+-    @Given("^Open FAIR website url$")
+-
+-    public void openFAIRWebsiteUrl() {
+-
+-        driver.setUp();
+-        System.out.println("open FAIR website");
+-    }
++        @Before
++        public void intializetest(){
++            System.out.println("Starting Driver");
++            driver.setUp();
++            fairhome.AcceptCookie(driver);
++            System.out.println("open FAIR website");
++        }
+ 
+-    @And("^I click on start project button$")
+-    public void iClickOnStartProjectButton() {
+-        fairhome.ClickStartProject(driver);
+-    }
++        @When("^FAIR website open it contains subcribe section$")
++        public void fairWebsiteOpenItContainsSubcribeSection() {
++            fairhome.DisplaySubcribe(driver);
++        }
++
++        @And("^Subscribe section has subscribe button$")
++        public void subscribeSectionHasSubscribeButton() {
++              fairhome.SectionHassubcribeButton(driver);
++        }
++
++        @Then("^User select the Subscribe button$")
++        public void userSelectTheSubscribeButton() {
++            fairhome.ClickSubscribeButton(driver);
++        }
++
++        @Then("^website should open the subscribe form$")
++        public void websiteShouldOpenTheSubscribeForm() {
++            fairhome.CheckSubscribePopup(driver);
++        }
++
++
++        @Then("^website should display About link$")
++        public void websiteShouldDisplayAboutLink() {
++            fairhome.DisplayAboutHamburger(driver);
++        }
++
++       @Then("^Hamburger icon should be closed$")
++        public void hamburgerIconShouldBeClosed() {
++            try {
++                Thread.sleep(30);
++            } catch (InterruptedException e) {
++                e.printStackTrace();
++            }
++            System.out.println("Hamburger Closed");
++
++        }
++
++        @And("^Click Accept and Decline popup$")
++        public void clickAcceptAndDeclinePopup() {
++            fairhome.AcceptCookie(driver);
++        }
++
++        @Given("^Home page contain the Consulting Service section with Service button$")
++        public void homePageContainTheConsultingServiceSectionWithServiceButton() {
++            fairhome.ConsultingServiceHome(driver);
++        }
++
++        @When("^User clicks on Service button$")
++        public void userClicksOnServiceButton() {
++            fairhome.VerifyServiceButton(driver);
++        }
++
++        @Then("^Service page will open$")
++        public void servicePageWillOpen() {
++            fairhome.GetUrl(driver);
++        }
+ 
+-    @Then("^The start project form should appear$")
+-    public void theStartProjectFormShouldAppear() {
+-        System.out.println("Start Porject form should display at UI");
+-    }
++        @Given("^Home page contain the FAIR Friendly section with Explore button$")
++        public void homePageContainTheFAIRFriendlySectionWithExploreButton() {
++            fairhome.AgileFriendlyHome(driver);
++        }
+ 
+-    @Then("^close the browser$")
+-    public void tearDown() {
+-        System.out.println("Close the browser");
++        @When("^User clicks on Explore button$")
++        public void userClicksOnExploreButton() {
++            fairhome.VerifyServiceButton(driver);
++        }
+ 
+-        driver.quit();
+-    }
++        @Then("^About page will open$")
++        public void aboutPageWillOpen() {
++            fairhome.GetUrl(driver);
++        }
++
++        @After
++        public void CloseBrowser(){
++            driver.quit();
++            System.out.println("Closing the browser");
++        }
++
++        @Given("^Home page contain the Product section with Work button$")
++        public void homePageContainTheProductSectionWithWorkButton() {
++            fairhome.ProductHome(driver);
++        }
++
++        @When("^User clicks on Work button$")
++        public void userClicksOnWorkButton() {
++            fairhome.VerifyWorkButton(driver);
++        }
++
++        @Then("^Product page will open$")
++        public void productPageWillOpen() {
++            fairhome.GetUrl(driver);
++
++        }
+ 
++        @Given("^Home page contain the Insight section with Work button$")
++        public void homePageContainTheInsightSectionWithWorkButton() {
++            fairhome.InsightsHome(driver);
+ 
+-}
++        }
+ 
++        @When("^User clicks on Content button$")
++        public void userClicksOnContentButton() {
++            fairhome.VerifyContentButton(driver);
++
++        }
+ 
++        @Then("^Content page will open$")
++        public void contentPageWillOpen() {
++            fairhome.GetUrl(driver);
++        }
+ 
++        @Given("^Home page contain the Partner section with More button$")
++        public void homePageContainThePartnerSectionWithMoreButton() {
+ 
++        fairhome.PartnerHome(driver);
++        }
+ 
++        @When("^User clicks on More button$")
++        public void userClicksOnMoreButton() {
++            fairhome.VerifyMoreButton(driver);
++        }
++
++        @Then("^Partner page will open$")
++        public void partnerPageWillOpen() {
++            fairhome.GetUrl(driver);
++        }
++
++        @Given("^Home page header contain hamburger icon with Home page link$")
++        public void homePageHeaderContainHamburgerIconWithHomePageLink() {
++            fairhome.HamburgerHomeIcon(driver);
++
++        }
++
++        @When("^User clicks home link$")
++        public void userClicksHomeLink() {
++            fairhome.VerifyHomeHamburger(driver);
++
++        }
++
++        @Then("^Home page will open$")
++        public void homePageWillOpen() {
++        fairhome.GetUrl(driver);
++        }
++
++        @Given("^Home page header contain hamburger icon with About page link$")
++        public void homePageHeaderContainHamburgerIconWithAboutPageLink() {
++            fairhome.HamburgerHomeIcon(driver);
++        }
++
++        @When("^User clicks on About link$")
++        public void userClicksOnAboutLink() {
++            fairhome.DisplayAboutHamburger(driver);
++        }
++    }
